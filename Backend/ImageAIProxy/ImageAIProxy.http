@@ -1,11 +1,10 @@
 @ImageAIProxy_HostAddress = http://localhost:5231
 
-GET {{ImageAIProxy_HostAddress}}/todos/
+### Probar el endpoint /process-image
+POST {{ImageAIProxy_HostAddress}}/process-image
+Content-Type: application/json
 Accept: application/json
 
-###
-
-GET {{ImageAIProxy_HostAddress}}/todos/1
-Accept: application/json
-
-###
+{
+  "Base64Image": "iVBORw0KGgoAAAANSUhEUgAAAAUA...JRU5ErkJggg=="
+}
