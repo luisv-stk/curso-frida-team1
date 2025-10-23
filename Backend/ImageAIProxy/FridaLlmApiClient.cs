@@ -8,7 +8,7 @@ namespace ImageAIProxy;
 /// </summary>
 public static class FridaLlmApiClient
 {
-    private static readonly string EndpointUrl = "https://frida-llm-api.azurewebsites.net/v1/responses";
+    private static readonly string EndpointUrl = "https://frida-llm-api.azurewebsites.net/v1/chat/completions";
     private static readonly string BearerToken = "vizeE6PMyaLY94NosV3J";
 
     /// <summary>

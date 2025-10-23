@@ -4,7 +4,7 @@ using System.Text.Json;
 namespace ImageAIProxy.Tests;
 
 /// <summary>
-/// Integration tests for /responses.
+/// Integration tests for /chat/completions.
 /// </summary>
 public class IntegrationTests
 {
@@ -26,7 +26,7 @@ public class IntegrationTests
         // Build the payload matching the required JSON structure.
         var payload = new ModelRequest
         {
-            Model = "Innovation-gpt4o",
+            Model = "claude-4-sonnet",
             Input = $"Analyze the following image encoded in base64:{base64Image}",
             Temperature = 1,
             MaxTokens = 4000,
@@ -53,7 +53,7 @@ public class IntegrationTests
             EnableCaching = false
         };
 
-        var response = await _client.PostAsJsonAsync("/v1/responses", payload);
+        var response = await _client.PostAsJsonAsync("/v1/chat/completions", payload);
         var responseString = await response.Content.ReadAsStringAsync();
 
         // Fail with the response body included so you can see the server error in test output.
