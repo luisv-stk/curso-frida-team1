@@ -43,13 +43,7 @@ app.MapPost("/process-image", async (
     if (body is null || string.IsNullOrEmpty(body.Base64Image))
         return Results.BadRequest(new { error = "Debe enviarse una imagen codificada en Base64" });
 
-    var inputText = @$"You are an expert image analyst. Analyze the image between <image_b64>...</image_b64>.
-        Output: concise JSON only (no markdown), with fields: name: A descriptive name for the image based on its content.\r\nformat: One of the following: \""image\"", \""video\"", \""illustration\"", or \""3D\"".\r\ntags: A list of relevant tags or keywords describing the image.\r\nsize: Dimensions of the image in pixels, as {{ \""width\"": ..., \""height\"": ... }}.\r\nauthor: Extracted from the image metadata, if available.\r\ndate: Original creation date from metadata.\r\nupload_date: Upload date from metadata, if available.\r\n\r\n\r\nReturn only the JSON object, without additional commentary.\r\n<expected_output>\r\n{{\r\n  \""name\"": \""Sunset over mountain range\"",\r\n  \""format\"": \""image\"",\r\n  \""tags\"": [\""sunset\"", \""mountains\"", \""landscape\"", \""nature\""],\r\n  \""size\"": {{\r\n    \""width\"": 1920,\r\n    \""height\"": 1080\r\n  }},\r\n  \""author\"": \""John Doe\"",\r\n  \""date\"": \""2023-06-15\"",\r\n  \""upload_date\"": \""2023-07-01\""\r\n}}\r\n<\/expected_output>
-        Schema: {{ ""name"": string | null, ""format"": ""image"" | ""video"" | ""illustration"" | ""3D"" | null, ""tags"": [string], ""size"": {{ ""width"": int | null, ""height"": int | null }}, ""author"": string | null, ""date"": string | null, ""upload_date"": string | null, ""uncertain"": bool }}
-
-        <image_b64>
-        {body.Base64Image}
-        </image_b64>";
+    var inputText = @$"You are an expert image analyst. Analyze the image.\nOutput: concise JSON only (no markdown), with fields:\nname: A descriptive name for the image based on its content.\nformat: One of the following: \""image\"", \""video\"", \""illustration\"", or \""3D\"".\ntags: A list of relevant tags or keywords describing the image.\nsize: Dimensions of the image in pixels, as {{ \""width\"": ..., \""height\"": ... }}.\nauthor: Extracted from the image metadata, if available.\ndate: Original creation date from metadata.\nupload_date: Upload date from metadata, if available.\n\nReturn only the JSON object, without additional commentary.\n<expected_output>\n{{\n  \""name\"": \""Sunsetovermountainrange\"",\n  \""format\"": \""image\"",\n  \""tags\"": [\""sunset\"", \""mountains\"", \""landscape\"", \""nature\""],\n  \""size\"": {{\n    \""width\"": 1920,\n    \""height\"": 1080\n  }},\n  \""author\"": \""JohnDoe\"",\n  \""date\"": \""2023-06-15\"",\n  \""upload_date\"": \""2023-07-01\""\n}}\n</expected_output>\n\nSchema: {{ \""name\"": string | null, \""format\"": \""image\"" | \""video\"" | \""illustration\"" | \""3D\"" | null, \""tags\"": [string], \""size\"": {{ \""width\"": int | null, \""height\"": int | null }}, \""author\"": string | null, \""date\"": string | null, \""upload_date\"": string | null, \""uncertain\"": bool }}";
 
     var payload = new ModelRequest
     {
@@ -65,14 +59,19 @@ app.MapPost("/process-image", async (
                     {
                         Type = "text",
                         Text = inputText
+                    },
+                    new ContentItem
+                    {
+                        Type = "image_url",
+                        ImageUrl = new ImageUrlContent
+                        {
+                            Url = "data:image/jpeg;base64," + body.Base64Image,
+                            Detail = "Analyze this image and provide a concise JSON description as specified."
+                        }
                     }
                 }
             }
         },
-        //Input = inputText,
-        //Temperature = 0.2,    // análisis estable; si prefieres variación, sube a 0.2–0.3 y cambia a double
-        //MaxTokens = 1500,   // suficiente para respuesta estructurada
-        //TopP = 1,           // mantenlo en 1 (no mezclar mucho con temperature)
         Stream = false,
         EnableCaching = false
     };

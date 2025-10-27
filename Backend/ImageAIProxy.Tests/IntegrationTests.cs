@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components.Forms;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -27,29 +28,31 @@ public class IntegrationTests
         var payload = new ModelRequest
         {
             Model = "claude-4-sonnet",
-            Input = $"Analyze the following image encoded in base64:{base64Image}",
-            Temperature = 1,
-            MaxTokens = 4000,
-            TopP = 1,
+            Messages = new List<RequestMessage>
+            {
+                new RequestMessage
+                {
+                    Role = "user",
+                    Content = new List<ContentItem>
+                    {
+                        new ContentItem
+                        {
+                            Type = "text",
+                            Text = "Analyze the following image encoded in base64"
+                        },
+                        new ContentItem
+                        {
+                            Type = "image_url",
+                            ImageUrl = new ImageUrlContent
+                            {
+                                Url = "data:image/jpeg;base64," + base64Image,
+                                Detail = "Analyze this image and provide a concise JSON description as specified."
+                            }
+                        }
+                    }
+                }
+            },
             Stream = false,
-            //Tools = new List<Tool>
-            //{
-            //    new Tool
-            //    {
-            //        Name = "string",
-            //        Description = "string",
-            //        Parameters = new List<ToolParameter>
-            //        {
-            //            new ToolParameter
-            //            {
-            //                Name = "string",
-            //                Type = "string",
-            //                Description = "string",
-            //                Required = false
-            //            }
-            //        }
-            //    }
-            //},
             EnableCaching = false
         };
 
