@@ -21,8 +21,19 @@ builder.Services.AddRouting(options =>
 
 builder.WebHost.UseKestrelHttpsConfiguration();
 builder.Services.AddHttpClient();
-var app = builder.Build();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocal3000", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+var app = builder.Build();
+app.UseCors("AllowLocal3000");
 
 if (app.Environment.IsDevelopment())
 {
