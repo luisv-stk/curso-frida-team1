@@ -398,3 +398,9 @@ FodyWeavers.xsd
 *.sln.iml
 /ResourceServerlessApi/serverless.template
 /ResourceServerlessApi/messages
+
+# NextJS build output
+.next/
+
+# Frida specifications
+.frida-specs
