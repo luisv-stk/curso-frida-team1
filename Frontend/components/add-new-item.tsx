@@ -12,26 +12,29 @@ import { cn } from '@/lib/utils';
 
 const AddNewItem: React.FC = () => {
   const [fileType, setFileType] = useState<string>('Fotografía');
-  const store = useUploadStore();
   const { uploadFile } = useUpload();
-  const { isUploading, totalProgress, hideAddNewItem } = useUploadStore();
+  const { files, isUploading, totalProgress, hideAddNewItem, displayAddNewItem, displayUploadDetails, clearAllFiles  } = useUploadStore();
 
   return (
     <div>
-      {!isUploading && (
-        <div className="w-screen flex justify-center items-center bg-[#f5f9fd] text-[#131313]">
-          <div className=" p-8 rounded-lg w-full">
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center text-[#0179ff]">
-                <FaArrowLeft className="mr-2" />
-                <span className="font-bold">Añadir nuevo elemento</span>
-              </div>
-              <div className="text-[#0276ff] flex items-center cursor-pointer" onClick={hideAddNewItem}>
-                <FaCheck className="mr-2" />
-                <span>Cerrar</span>
-              </div>
+      
+      <div className="w-screen flex justify-center items-center bg-[#f5f9fd] text-[#131313]">
+        <div className=" p-8 rounded-lg w-full">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center text-[#0179ff]">
+              <FaArrowLeft className="mr-2" />
+              <span className="font-bold">Añadir nuevo elemento</span>
             </div>
+            <div className="text-[#0276ff] flex items-center cursor-pointer" onClick={() => {
+              hideAddNewItem();
+              clearAllFiles();
+              }}>
+              <FaCheck className="mr-2" />
+              <span>Cerrar</span>
+            </div>
+          </div>
 
+          {!isUploading &&(<div>
             <div className="mb-4">
               <h2 className="font-bold mb-4">Datos del archivo</h2>
               <div className="flex space-x-8 mb-4">
@@ -74,38 +77,71 @@ const AddNewItem: React.FC = () => {
               </div>
             </div>
 
-            <div className="border-dashed border-2 border-[#0276ff] flex items-center justify-center relative bg-white rounded-lg">
-              <div className="w-full h-full flex flex-col items-center justify-center">
+            <div className={cn(
+              "border-dashed border-2 border-[#0276ff] flex items-center justify-center relative bg-white rounded-lg",
+              "",
+              {
+                "border-solid border-green-600": totalProgress === 100,
+              }
+            )}>
+              <div className="w-full flex flex-col items-center justify-center">
                 {totalProgress === 0 && 
                   <DropzoneComponent />
                 }
-                {totalProgress > 0 && <UploadSuccessMessage fileName="Retrato_male.JPG" fileSize="1,2 Gb" />}
+                {totalProgress > 0 && <UploadSuccessMessage />}
               </div>
             </div>
+            
 
-            <div className="flex justify-center mt-4 space-x-4">
-              <button className={cn("px-4 py-2 border border-[#d9d9d9] text-[#6f7274] bg-[#f5f9fd] rounded-3xl cursor-pointer", "", {
-                'bg-slate-500 text-white border-0': store.files.length > 0
-              })}>
-                Borrar
-              </button>
-              <button className={cn("px-4 py-2 bg-[#d9d9d9] text-[#6f7274] rounded-3xl cursor-pointer","", {
-                'bg-[#0276ff] text-white': store.files.length > 0
-              })}
-                onClick={() => {
-                  if (store.files.length > 0) {
-                    uploadFile(store.files[0].id, store.files[0].file);
-                  }}}
-              >
-                Cargar archivo
-              </button>
+            {totalProgress === 0 && 
+              <div className="flex justify-center mt-4 space-x-4">
+                <button className={cn("px-4 py-2 border border-[#d9d9d9] text-[#6f7274] bg-[#f5f9fd] rounded-3xl cursor-pointer", "", {
+                  'bg-slate-500 text-white border-0': files.length > 0
+                })}
+                  onClick={clearAllFiles}
+                >
+                  Borrar
+                </button>
+                <button className={cn("px-4 py-2 bg-[#d9d9d9] text-[#6f7274] rounded-3xl cursor-pointer","", {
+                  'bg-[#0276ff] text-white': files.length > 0
+                })}
+                  onClick={() => {
+                    if (files.length > 0) {
+                      uploadFile(files[0].id, files[0].file);
+                    }}}
+                >
+                  Cargar archivo
+                </button>
+              </div>
+            }
+            {totalProgress > 0 &&
+              <div className="flex justify-center mt-4 space-x-4">
+                <button className="border border-[#0179ff] text-[#0179ff] cursor-pointer px-4 py-2 rounded-full" onClick={displayUploadDetails}>
+                  Ver todas tus publicaciones
+                </button>
+                <button className="bg-[#0179ff] text-white px-4 py-2 cursor-pointer rounded-full" onClick={() => {
+                  displayAddNewItem();
+                  clearAllFiles();
+                }}>
+                  Añadir nuevo elemento
+                </button>
+              </div>
+            }
+          </div>)}
+          {isUploading && 
+            <div>
+              <UploadProgress />
+              <div className="flex justify-center mt-4 space-x-4">
+                <button className="bg-[#0179ff] text-white px-4 py-2 cursor-pointer rounded-full" onClick={() => {
+                  clearAllFiles();
+                }}>
+                  Cancelar
+                </button>
+              </div>
             </div>
-          </div>
+          }
         </div>
-      )}
-      {isUploading && (
-        <UploadProgress fileName="Retraro_male.JPG" fileSize="1,2 Gb" />
-      )}
+      </div>
     </div>
   );
 };

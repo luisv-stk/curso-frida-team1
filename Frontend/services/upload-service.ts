@@ -1,4 +1,4 @@
-import { useUploadStore } from '../stores/upload-store';
+import { AnalysisResult, UploadedFile, useUploadStore } from '../stores/upload-store';
 
 // Configuration interface for upload service
 export interface UploadConfig {
@@ -24,11 +24,10 @@ const defaultConfig: UploadConfig = {
 
 // Upload response interface
 export interface UploadResponse {
-  success: boolean;
-  url?: string;
-  message?: string;
+  analysisResult?: string;
   error?: string;
-  data?: any;
+  url?: string;
+  success?: boolean;
 }
 
 // Upload progress callback type
@@ -67,7 +66,7 @@ export const validateFile = (file: File, config: UploadConfig = defaultConfig): 
 };
 
 // Create FormData for file upload
-const createFormData = (file: File, fieldName: string = 'file', additionalData?: Record<string, any>): FormData => {
+const createFormData = (file: File, fieldName: string = 'file', additionalData?: Record<string, unknown>): FormData => {
   const formData = new FormData();
   formData.append(fieldName, file);
 
@@ -85,7 +84,7 @@ export const uploadFile = async (
   fileId: string,
   file: File,
   config: UploadConfig = defaultConfig,
-  additionalData?: Record<string, any>
+  additionalData?: Record<string, unknown>
 ): Promise<UploadResponse> => {
   const store = useUploadStore.getState();
 
@@ -124,12 +123,12 @@ export const uploadFile = async (
         try {
           const response: UploadResponse = JSON.parse(xhr.responseText);
           
-          if (xhr.status >= 200 && xhr.status < 300 && response.success) {
+          if (xhr.status >= 200 && xhr.status < 300 ) {
             store.setFileStatus(fileId, 'completed');
             store.updateFileProgress(fileId, 100);
             
-            if (response.url) {
-              store.setFileUploadedUrl(fileId, response.url);
+            if (response.analysisResult) {
+              store.setFileUploadedUrl(fileId, response.analysisResult);
             }
 
             // Set as last uploaded file and show success message
@@ -216,7 +215,7 @@ export const uploadFile = async (
 export const uploadFiles = async (
   fileIds: string[],
   config: UploadConfig = defaultConfig,
-  additionalData?: Record<string, any>
+  additionalData?: Record<string, unknown>
 ): Promise<UploadResponse[]> => {
   const store = useUploadStore.getState();
   const results: UploadResponse[] = [];
@@ -268,7 +267,7 @@ export const uploadFiles = async (
 // Upload all pending files
 export const uploadAllPendingFiles = async (
   config: UploadConfig = defaultConfig,
-  additionalData?: Record<string, any>
+  additionalData?: Record<string, unknown>
 ): Promise<UploadResponse[]> => {
   const store = useUploadStore.getState();
   const pendingFiles = store.files
@@ -343,17 +342,33 @@ export const uploadBase64ImageFile = async (
 
     const result: UploadResponse = await response.json();
 
-    if (response.ok && result.success) {
+    if (response.ok && result.analysisResult) {
       store.setFileStatus(fileId, 'completed');
       store.updateFileProgress(fileId, 100);
-      if (result.url) store.setFileUploadedUrl(fileId, result.url);
+      
+      const responseData = JSON.parse(result.analysisResult) as Record<string, unknown>;
+      const currentFile = store.files.find(f => f.id === fileId);
 
-      const uploadedFile = store.files.find(f => f.id === fileId);
-      if (uploadedFile) {
-        store.setLastUploadedFile({ ...uploadedFile, uploadedUrl: result.url });
+      if (responseData && currentFile && responseData.format) {
+        const newUploadFile: UploadedFile = {
+          id: fileId,
+          name: currentFile.name,
+          size: {
+            width: responseData.width as number | null,
+            height: responseData.height as number | null,
+          },
+          format: responseData.format as string,
+          tags: responseData.tags as string[],
+          author: responseData.author as string | null,
+          date: responseData.date ? new Date(responseData.date as string) : null,
+          upload_date: responseData.upload_date ? new Date(responseData.upload_date as string) : null,
+          uncertain: responseData.uncertain as boolean,
+          uploadedUrl: `data:image/jpeg;base64,${base64Image}`,
+        };
+        store.addUploadFile([newUploadFile]);
         store.setShowSuccessMessage(true);
       }
-
+      
       return result;
     } else {
       const error = result.error || `Error del servidor: ${response.status}`;
@@ -385,7 +400,7 @@ export const cancelUpload = (fileId: string): void => {
 export const retryUpload = async (
   fileId: string,
   config: UploadConfig = defaultConfig,
-  additionalData?: Record<string, any>
+  additionalData?: Record<string, unknown>
 ): Promise<UploadResponse> => {
   const store = useUploadStore.getState();
   const file = store.files.find(f => f.id === fileId);
@@ -410,7 +425,7 @@ export const retryUpload = async (
 export const batchUpload = async (
   fileIds: string[],
   config: UploadConfig = defaultConfig,
-  additionalData?: Record<string, any>,
+  additionalData?: Record<string, unknown>,
   concurrency: number = 3
 ): Promise<UploadResponse[]> => {
   const store = useUploadStore.getState();

@@ -21,7 +21,7 @@ export const useUpload = () => {
     fileId: string,
     file: File,
     config?: UploadConfig,
-    additionalData?: Record<string, any>
+    additionalData?: Record<string, unknown>
   ): Promise<UploadResponse> => {
     try {
       return await uploadBase64ImageFile(fileId, file, config);
@@ -38,7 +38,7 @@ export const useUpload = () => {
   const handleUploadFiles = useCallback(async (
     fileIds: string[],
     config?: UploadConfig,
-    additionalData?: Record<string, any>
+    additionalData?: Record<string, unknown>
   ): Promise<UploadResponse[]> => {
     try {
       return await uploadFiles(fileIds, config, additionalData);
@@ -53,7 +53,7 @@ export const useUpload = () => {
 
   const handleUploadAllPending = useCallback(async (
     config?: UploadConfig,
-    additionalData?: Record<string, any>
+    additionalData?: Record<string, unknown>
   ): Promise<UploadResponse[]> => {
     try {
       return await uploadAllPendingFiles(config, additionalData);
@@ -66,7 +66,7 @@ export const useUpload = () => {
   const handleRetryUpload = useCallback(async (
     fileId: string,
     config?: UploadConfig,
-    additionalData?: Record<string, any>
+    additionalData?: Record<string, unknown>
   ): Promise<UploadResponse> => {
     try {
       return await retryUpload(fileId, config, additionalData);
@@ -83,7 +83,7 @@ export const useUpload = () => {
   const handleBatchUpload = useCallback(async (
     fileIds: string[],
     config?: UploadConfig,
-    additionalData?: Record<string, any>,
+    additionalData?: Record<string, unknown>,
     concurrency?: number
   ): Promise<UploadResponse[]> => {
     try {

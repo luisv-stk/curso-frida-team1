@@ -12,11 +12,43 @@ export interface UploadFile {
   error?: string;
   uploadedUrl?: string;
   createdAt: Date;
+  data?: Record<string, unknown>;
+}
+
+export interface AnalysisResult {
+  name: string;
+  size: {
+    width: number | null;
+    height: number | null;
+  };
+  format: string;
+  tags: string[];
+  author: string | null;
+  date: Date | null;
+  upload_date: Date | null;
+  uncertain: boolean;
+}
+
+export interface UploadedFile {
+  id: string;
+  uploadedUrl?: string;
+  name: string;
+  size: {
+    width: number | null;
+    height: number | null;
+  };
+  format: string;
+  tags: string[];
+  author: string | null;
+  date: Date | null;
+  upload_date: Date | null;
+  uncertain: boolean;
 }
 
 export interface UploadState {
   // File management
   files: UploadFile[];
+  uploadedFiles: UploadedFile[];
   showHello: boolean;
   showAddNewItem: boolean;
   showUploadDetails: boolean;
@@ -56,6 +88,8 @@ export interface UploadActions {
   updateFileProgress: (fileId: string, progress: number) => void;
   setFileStatus: (fileId: string, status: UploadFile['status'], error?: string) => void;
   setFileUploadedUrl: (fileId: string, url: string) => void;
+  setFileUploadedResponseData: (fileId: string, data: Record<string, unknown>) => void;
+  addUploadFile: (files: UploadedFile[]) => void;
   
   // Queue management
   addToQueue: (fileId: string) => void;
@@ -85,6 +119,7 @@ export type UploadStore = UploadState & UploadActions;
 // Initial state
 const initialState: UploadState = {
   files: [],
+  uploadedFiles: [],
   showHello: true,
   showAddNewItem: false,
   showUploadDetails: false,
@@ -151,6 +186,13 @@ export const useUploadStore = create<UploadStore>((set, get) => ({
     }));
   },
 
+  addUploadFile: (files: UploadedFile[]) => {
+    const newFiles: UploadedFile[] = files.map((file) => (file));
+    set((state) => ({
+      uploadedFiles: [...state.uploadedFiles, ...newFiles],
+    }));
+  },
+
   removeFile: (fileId: string) => {
     set((state) => ({
       files: state.files.filter((file) => file.id !== fileId),
@@ -208,6 +250,14 @@ export const useUploadStore = create<UploadStore>((set, get) => ({
     set((state) => ({
       files: state.files.map((file) =>
         file.id === fileId ? { ...file, uploadedUrl: url, status: 'completed' } : file
+      ),
+    }));
+  },
+
+  setFileUploadedResponseData: (fileId: string, data: Record<string, unknown>) => {
+    set((state) => ({
+      files: state.files.map((file) =>
+        file.id === fileId ? { ...file, setFileUploadedResponseData: data, status: 'completed' } : file
       ),
     }));
   },

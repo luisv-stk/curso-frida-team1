@@ -3,6 +3,7 @@ export {
   useUploadStore, 
   formatFileSize,
   type UploadFile, 
+  type UploadedFile, 
   type UploadState, 
   type UploadActions, 
   type UploadStore 

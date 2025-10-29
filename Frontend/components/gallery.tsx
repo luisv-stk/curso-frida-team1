@@ -1,19 +1,18 @@
+'use client';
+import { UploadedFile, UploadFile, useUploadStore } from '@/stores';
 import React from 'react';
 import { FaCamera, FaVideo } from 'react-icons/fa';
 
 const placeholderImage = 'https://placehold.co/400x400/jpg';
 
 const Gallery: React.FC = () => {
-  const images = [
-    { id: 1, icon: <FaCamera />, src: placeholderImage },
-    { id: 2, icon: <FaVideo />, src: placeholderImage },
-    { id: 3, icon: <FaCamera />, src: placeholderImage },
-    { id: 4, icon: <FaCamera />, src: placeholderImage },
-    { id: 5, icon: <FaCamera />, src: placeholderImage },
-    { id: 6, icon: <FaCamera />, src: placeholderImage },
-    { id: 7, icon: <FaVideo />, src: placeholderImage },
-    { id: 8, icon: <FaCamera />, src: placeholderImage },
-  ];
+  const { uploadedFiles } = useUploadStore();
+
+  const images = (uploadedFiles ?? []).map((f: UploadedFile) => ({
+    id: f.id,
+    src: f.uploadedUrl || placeholderImage,
+    icon: <FaCamera />,
+  }));
 
   return (
     <div className="w-screen h-screen max-w-7xl mx-auto bg-white">

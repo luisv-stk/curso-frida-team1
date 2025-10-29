@@ -1,17 +1,15 @@
 // File: UploadProgress.tsx
 
+import { useUploadStore } from '@/stores';
 import React from 'react';
 import { FaRocket } from 'react-icons/fa';
 
-interface UploadProgressProps {
-  fileName?: string;
-  fileSize?: string;
-}
 
-const UploadProgress: React.FC<UploadProgressProps> = ({ fileName, fileSize }) => {
+const UploadProgress: React.FC = () => {
+  const { files } = useUploadStore();
   return (
-    <div className="w-screen h-screen flex items-center justify-center bg-white">
-      <div className="w-full max-w-md mx-auto border rounded-lg shadow-md bg-f5f9fd flex flex-col items-center">
+    <div className="flex items-center relative justify-center bg-white rounded-lg border-2 border-blue-200">
+      <div className="w-full mx-auto rounded-lg flex flex-col items-center">
         <div className="p-8">
           <div className="flex justify-center items-center mb-4">
             <FaRocket className="text-7xl text-blue-500" />
@@ -31,7 +29,7 @@ const UploadProgress: React.FC<UploadProgressProps> = ({ fileName, fileSize }) =
             Subiendo
           </h2>
           <p className="text-center text-gray-700">
-            {fileName} - {fileSize}.
+            {`${files[0].name} - (${(files[0].size / (1024 * 1024)).toFixed(2)} Mb)`}.
           </p>
         </div>
       </div>
