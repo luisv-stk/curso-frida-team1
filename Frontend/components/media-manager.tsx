@@ -7,14 +7,16 @@ import SearchBar from './search-bar';
 import Gallery from './gallery';
 import AddNewItem from './add-new-item';
 import { useUploadStore } from '@/stores';
+import AllMyPosts from './all-my-posts';
 
 const MediaManager: React.FC = () => {
-  const { showHello, showAddNewItem }  = useUploadStore();
+  const { showHello, showAddNewItem, showUploadDetails }  = useUploadStore();
 
   return (
     <div className="items-center">
         {showHello && <Hello />}
         {showAddNewItem && <AddNewItem />}
+        {showUploadDetails && <AllMyPosts />}
         <HeaderText />
         <SearchBar />
         <Gallery />

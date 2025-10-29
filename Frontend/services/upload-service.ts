@@ -352,7 +352,9 @@ export const uploadBase64ImageFile = async (
       if (responseData && currentFile && responseData.format) {
         const newUploadFile: UploadedFile = {
           id: fileId,
-          name: currentFile.name,
+          name: typeof responseData.name === 'string'
+            ? responseData.name
+            : (currentFile.name || 'unknown'),
           size: {
             width: responseData.width as number | null,
             height: responseData.height as number | null,

@@ -18,34 +18,38 @@ const PhotoCard: React.FC<PhotoCardProps> = ({ name, type, size, price, author, 
   const placeHolderImage = 'https://placehold.co/400x400/jpg';
 
   return (
-    <div className="flex border border-gray-200 shadow-sm mb-4">
-      <div className="relative w-48 h-48">
+    <div className="flex mb-4 bg-white">
+      <div className="relative w-60 h-50 mr-4">
         <img
           src={imageUrl || placeHolderImage}
           alt={name}
           className="object-cover w-full h-full"
         />
-        <div className="absolute bottom-2 left-2 flex space-x-2">
-          <button className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100">
-            <FaEdit />
-          </button>
-          <button className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100">
-            <FaTrash />
-          </button>
+        <div className="absolute bottom-2 left-2 flex justify-center items-center w-full">
+          <div className="space-x-2">
+            <button className="bg-white/80 p-2 rounded-full shadow-md hover:bg-gray-100">
+              <FaEdit />
+            </button>
+            <button className="bg-white/80 p-2 rounded-full shadow-md hover:bg-gray-100">
+              <FaTrash />
+            </button>
+          </div>
         </div>
       </div>
-      <div className="p-4 flex flex-col justify-between">
-        <div>
-          <p><strong>Nombre:</strong> {name}</p>
-          <p><strong>Tipo de archivo:</strong> {type}</p>
-          <p><strong>Tamaño:</strong> {size}</p>
+      <div className="p-4 flex flex-col border border-gray-200 justify-between">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <p><strong>Nombre:</strong> {name}</p>
+            <p><strong>Tipo de archivo:</strong> {type}</p>
+            <p><strong>Tamaño:</strong> {size}</p>
+          </div>
+          <div>
+            <p><strong>Precio:</strong> {price}</p>
+            <p><strong>Autor:</strong> {author}</p>
+            <p><strong>Fecha subida:</strong> {date}</p>
+          </div>
         </div>
-        <div className="flex justify-between">
-          <p><strong>Precio:</strong> {price}</p>
-          <p><strong>Autor:</strong> {author}</p>
-          <p><strong>Fecha subida:</strong> {date}</p>
-        </div>
-        <div>
+        <div className="mt-2 border-t-2 border-gray-200 pt-2">
           <p><strong>Etiquetas descripción:</strong> {tags}</p>
         </div>
       </div>
