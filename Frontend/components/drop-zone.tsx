@@ -90,7 +90,7 @@ export const DropzoneComponent: React.FC<DropzoneComponentProps> = ({
                 <input
                     ref={inputRef}
                     type="file"
-                    accept=".jpg,.jpeg,.png"
+                    accept=".jpg,.jpeg,.png,.webp"
                     onChange={handleFileInput}
                     style={{ display: "none" }}
                     id="file-input"
